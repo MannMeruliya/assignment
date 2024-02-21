@@ -1,4 +1,6 @@
+import 'package:assignment/view/screen/signup_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -8,6 +10,11 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  signOut() async {
+    await GoogleSignIn().signOut();
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => SignupScreen()));
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,7 +23,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         centerTitle: true,
       ),
       body: Center(
-        child: ElevatedButton(onPressed: (){}, child: Text("Log Out")),
+        child: ElevatedButton(onPressed: (){
+          signOut();
+        }, child: Text("Log Out")),
       ) ,
     );
   }
