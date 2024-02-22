@@ -1,7 +1,7 @@
-import 'package:assignment/view/screen/bottom_navigation.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:assignment/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -11,35 +11,14 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  late bool _sucess;
-  late String _userEmail;
-
-  void _register() async {
-    final User? user = (await _auth.createUserWithEmailAndPassword(
-            email: _emailController.text, password: _passwordController.text))
-        .user;
-
-    if (user != null) {
-      setState(() {
-        _sucess = true;
-        _userEmail = user.email!;
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => MyHomePage(),
-        ));
-      });
-    } else {
-      setState(() {
-        _sucess = false;
-      });
-    }
-  }
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       appBar: AppBar(automaticallyImplyLeading: false),
       body: Padding(
@@ -64,12 +43,13 @@ class _SignupScreenState extends State<SignupScreen> {
                   borderRadius: const BorderRadius.all(Radius.circular(20)),
                 ),
                 child: TextField(
-                  controller: _emailController,
+                  controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: "Email",
+                    label: Text("eve.holt@reqres.in"),
                     hintStyle: TextStyle(color: Colors.grey.shade600),
                     prefixIcon: const Icon(Icons.email, color: Colors.grey),
                   ),
@@ -87,11 +67,12 @@ class _SignupScreenState extends State<SignupScreen> {
                   borderRadius: const BorderRadius.all(Radius.circular(20)),
                 ),
                 child: TextField(
-                  controller: _passwordController,
+                  controller: passwordController,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: "Password",
+                    label: Text("cityslicka"),
                     hintStyle: TextStyle(color: Colors.grey.shade600),
                     prefixIcon: const Icon(
                       Icons.lock,
@@ -103,21 +84,19 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(
                 height: 30,
               ),
-              MaterialButton(
-                onPressed: () {
-                  _register();
+              GestureDetector(
+                onTap: () {
+                  authProvider.login(emailController.text.toString(),passwordController.text.toString());
                 },
                 child: Container(
-                  alignment: Alignment.center,
-                  child: const Text(
-                    "Sign up",
-                    style: TextStyle(fontSize: 20, color: Colors.white),
-                  ),
                   height: 60,
                   width: double.infinity,
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(40)),
                     color: Color(0xff6F3ABB),
+                  ),
+                  child: Center(
+                    child: authProvider.loading ? CircularProgressIndicator(): Text('Login',style: TextStyle(fontSize: 20, color: Colors.white)),
                   ),
                 ),
               ),
@@ -164,12 +143,12 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     MaterialButton(
                       onPressed: () {
-                        setState(() {
-                          signInWithGoogle().then((value) =>
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => MyHomePage(),
-                              )));
-                        });
+                        // setState(() {
+                        //   signInWithGoogle().then((value) =>
+                        //       Navigator.of(context).push(MaterialPageRoute(
+                        //         builder: (context) => MyHomePage(),
+                        //       )));
+                        // });
                       },
                       child: Container(
                         height: 60,
@@ -233,13 +212,13 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 }
 
-Future<UserCredential> signInWithGoogle() async {
-  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-  final GoogleSignInAuthentication? googleAuth =
-      await googleUser?.authentication;
-  final credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth?.accessToken,
-    idToken: googleAuth?.idToken,
-  );
-  return await FirebaseAuth.instance.signInWithCredential(credential);
-}
+// Future<UserCredential> signInWithGoogle() async {
+//   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+//   final GoogleSignInAuthentication? googleAuth =
+//       await googleUser?.authentication;
+//   final credential = GoogleAuthProvider.credential(
+//     accessToken: googleAuth?.accessToken,
+//     idToken: googleAuth?.idToken,
+//   );
+//   return await FirebaseAuth.instance.signInWithCredential(credential);
+// }

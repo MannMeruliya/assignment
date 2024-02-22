@@ -1,11 +1,12 @@
+import 'package:assignment/main.dart';
 import 'package:assignment/model/model.dart';
-import 'package:assignment/view/screen/profile_screen.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -68,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        // backgroundColor: Theme.of(context).colorScheme.background,
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: SingleChildScrollView(
@@ -75,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: [
                 /// header
-                const Row(
+                 Row(
                   children: [
                     CircleAvatar(
                         radius: 28, child: Icon(Icons.person)),
@@ -94,8 +96,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     SizedBox(
-                      width: 100,
+                      width: 60,
                     ),
+                    IconButton(onPressed: () async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.setString('token', '');
+                      navigatorKey.currentState?.pushReplacementNamed('loginpage');
+                    }, icon: Icon(Icons.logout),),
                     Icon(Icons.notifications_none),
                     SizedBox(
                       width: 10,
